@@ -1,0 +1,30 @@
+Cluster counts: (array([0, 1, 2, 3], dtype=int64), array([  768, 64492, 65403, 12419], dtype=int64))
+
+Cluster 0 Stats - (143082,)
+Average peak loc: 100.27 +- 4.21
+Average peak height: 13.31 +- 9.81
+Average peak width: 9.86 +- 3.10
+Average peak skew: 3.39 +- 0.76
+Average MSE: 0.00004 +- 0.00008
+
+Cluster 1 Stats - (768,)
+Average peak loc: 95.64 +- 0.76
+Average peak height: 96.93 +- 42.26
+Average peak width: 3.45 +- 0.54
+Average peak skew: 6.43 +- 0.80
+Average MSE: 0.01139 +- 0.04486
+
+Cluster 2 Stats - (64492,)
+Average peak loc: 99.56 +- 5.96
+Average peak height: 17.01 +- 8.03
+Average peak width: 9.66 +- 3.79
+Average peak skew: 3.41 +- 0.95
+Average MSE: 0.00010 +- 0.00019
+
+Cluster 3 Stats - (65403,)
+Average peak loc: 100.95 +- 1.40
+Average peak height: 9.54 +- 2.66
+Average peak width: 9.88 +- 1.18
+Average peak skew: 3.38 +- 0.41
+Average MSE: 0.00009 +- 0.00015
+

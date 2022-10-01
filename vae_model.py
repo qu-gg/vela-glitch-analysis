@@ -1,36 +1,40 @@
+"""
+@file vae_modedl.py
+@author Ryan Missel
+
+Handles the model implementation code for the Variational AutoEncoder and the Denoising AutoEncoder
+that was tested as an ablation in the original work
+"""
 import torch
 import torch.nn as nn
 
 
-def init_weights(weights):
-    for layer in weights:
-        nn.init.normal_(layer.weight.data, 0, 0.001)
-        if layer.bias is not None:
-            layer.bias.data.zero_()
-
-
-def init_weights_(layer):
-    nn.init.normal_(layer.weight.data, 0, 0.001)
-    if layer.bias is not None:
-        layer.bias.data.zero_()
-
-
 class Flatten(nn.Module):
+    """ Flattening module to use in Sequential blocks from arbitrary size to [BatchSize, -1] """
     def forward(self, input):
         return input.view(input.size(0), -1)
 
 
 class UnFlatten(nn.Module):
+    """ Unflattening module to use in Sequential blocks from arbitrary size to [BatchSize, size, -1] """
     def forward(self, input, size=1024):
         return input.view(input.size(0), size, 1)
 
 
 class VAE(nn.Module):
     def __init__(self, device, image_channels=1, x_dim=200, h_dim=1280, z_dim=5):
+        """
+        Variational Auto-encoder network, used for reconstructing and denoising the pulsar signals effecitive
+        :arg device: which device (GPU or CPU) to run on
+        :arg image_channels: how many channels of the signal are present (1 in this work)
+        :arg x_dim: length of the input signal
+        :arg h_dim: bit adhoc, but dimension of the encoder output and decoder input
+        :arg z_dim: size of the latent vector
+        """
         super(VAE, self).__init__()
-
         self.device = device
 
+        # Encoder block of the VAE, stacked 1D CNN
         self.encoder = nn.Sequential(
             nn.Conv1d(image_channels, 16, kernel_size=4, stride=2),
             nn.LeakyReLU(.1),
@@ -43,10 +47,13 @@ class VAE(nn.Module):
             Flatten()
         )
 
-        self.fc1 = nn.Linear(h_dim, z_dim)
-        self.fc2 = nn.Linear(h_dim, z_dim)
-        self.fc3 = nn.Linear(z_dim, h_dim)
+        # Linear layers to get distributional parameters of VAE embedding
+        self.mu_layer = nn.Linear(h_dim, z_dim)
+        self.logvar_layer = nn.Linear(h_dim, z_dim)
 
+        # Decoding network, starting with a linear layer and then transposed 1D CNN layers to output space
+        # Ends with an adaptive average pooling layer to go from CNN output to 200 timesteps
+        self.latent_decode_layer = nn.Linear(z_dim, h_dim)
         self.decoder = nn.Sequential(
             nn.ConvTranspose1d(1, 64, kernel_size=5, stride=2),
             nn.LeakyReLU(.1),
@@ -58,44 +65,38 @@ class VAE(nn.Module):
             nn.AdaptiveAvgPool1d(x_dim)
         )
 
-        # self.encoder.apply(init_weights_)
-        # init_weights([self.fc1, self.fc2, self.fc3])
-        # self.decoder.apply(init_weights_)
-
     def reparameterize(self, mu, logvar):
+        """ Re-parameterization trick for VAE sampling, allowing for backpropagation """
         std = logvar.mul(0.5).exp_()
-        # return torch.normal(mu, std)
         esp = torch.randn(*mu.size(), device=self.device)
         z = mu + std * esp
         return z
 
     def bottleneck(self, h):
-        mu, logvar = self.fc1(h), self.fc2(h)
+        """ VAE information bottleneck and sampling """
+        mu, logvar = self.mu_layer(h), self.logvar_layer(h)
         z = self.reparameterize(mu, logvar)
         return z, mu, logvar
 
     def encode(self, x):
+        """ Encoding block with bottleneck and sampling """
         h = self.encoder(x)
-        #         print(h.shape)
         z, mu, logvar = self.bottleneck(h)
         return z, h, mu, logvar
 
     def decode(self, z):
-        #         print(z.shape)
-        z = self.fc3(z)
+        """ Decoding block from latent to signal """
+        z = self.latent_decode_layer(z)
         z = z.unsqueeze(1)
-        #         print(z.shape)
         z = self.decoder(z)
         return z.squeeze()
 
     def forward(self, x):
-        #         print(x.shape)
+        """ Forward function, encodes and decodes """
         x = x.unsqueeze(1)
-        #         print(x.shape)
         z, h, mu, logvar = self.encode(x)
-        #         print(z.shape)
-        z = self.decode(z)
-        return z, h, mu, logvar
+        x_hat = self.decode(z)
+        return x_hat, z, h, mu, logvar
 
     def recon_from_latent(self, h):
         """
@@ -103,7 +104,7 @@ class VAE(nn.Module):
         :param h: latent vector from enc
         :return: reconstructed x
         """
-        mu, logvar = self.fc1(h), self.fc2(h)
+        mu, logvar = self.mu_layer(h), self.logvar_layer(h)
         z = self.reparameterize(mu, logvar)
         z = self.decode(z)
         return z
@@ -142,10 +143,6 @@ class DAE(nn.Module):
             nn.AdaptiveAvgPool1d(x_dim)
         )
 
-        # self.encoder.apply(init_weights_)
-        # init_weights([self.fc1, self.fc2, self.fc3])
-        # self.decoder.apply(init_weights_)
-
     def encode(self, x):
         if self.denoise:
             x = x + torch.randn_like(x) * 0.3
@@ -171,7 +168,7 @@ class DAE(nn.Module):
         :param h: latent vector from enc
         :return: reconstructed x
         """
-        mu, logvar = self.fc1(h), self.fc2(h)
+        mu, logvar = self.mu_layer(h), self.logvar_layer(h)
         z = self.reparameterize(mu, logvar)
         z = self.decode(z)
         return z

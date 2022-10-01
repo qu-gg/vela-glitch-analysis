@@ -1,0 +1,17 @@
+july19A1
+\begin{table*}
+	 \centering
+	 \caption{SOM Clustering for July 19 with Antenna A1.}
+	 \label{tab:[]}
+	 \begin{tabular}{cclllll}
+	 	 \hline
+	 	 Cluster \# & \# Pulses & Peak Loc & Peak Height & Peak Width & Peak Skew & MSE \\ 
+	 	 \hline 
+	 	 0 & 143082 & $100.27 \pm 4.21$ & $13.31 \pm 9.81$ & $9.86 \pm 3.10$ & $3.39 \pm 0.76$ & $0.00004 \pm 0.00008$  \\ 
+	 	 1 & 768 & $95.64 \pm 0.76$ & $96.93 \pm 42.26$ & $3.45 \pm 0.54$ & $6.43 \pm 0.80$ & $0.01139 \pm 0.04486$  \\ 
+	 	 2 & 64492 & $99.56 \pm 5.96$ & $17.01 \pm 8.03$ & $9.66 \pm 3.79$ & $3.41 \pm 0.95$ & $0.00010 \pm 0.00019$  \\ 
+	 	 3 & 65403 & $100.95 \pm 1.40$ & $9.54 \pm 2.66$ & $9.88 \pm 1.18$ & $3.38 \pm 0.41$ & $0.00009 \pm 0.00015$  \\ 
+	 	 4 & 12419 & $100.71 \pm 1.59$ & $8.85 \pm 5.30$ & $9.35 \pm 1.69$ & $3.16 \pm 0.72$ & $0.00051 \pm 0.00088$  \\ 
+	 	 \hline 
+	 \end{tabular} 
+\end{table*} 
