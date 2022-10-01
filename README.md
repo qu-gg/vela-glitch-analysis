@@ -13,6 +13,22 @@ We leverage Variational Autoencoders (VAEs) and Self-Organizing Maps (SOMs) to e
 <p align='center'><img src="https://user-images.githubusercontent.com/32918812/182661125-c86a6805-7bf8-4b53-8f1c-6488a6b103a9.png" alt="framework schematic" )/></p>
 <p align='center'>Fig 1. Schematic of the prposed VAE-SOM model used in analysis.</p>
 
+### Citation
+If you found the information helpful for your work or use portions of this repo in research development, please consider citing:
+```
+@article{lousto2022vela,
+  title={Vela pulsar: single pulses analysis with machine learning techniques},
+  author={Lousto, Carlos O and Missel, Ryan and Prajapati, Harshkumar and Sosa Fiscella, Valentina and Armengol, Federico G L{\'o}pez and Gyawali, Prashnna Kumar and Wang, Linwei and Cahill, Nathan D and Combi, Luciano and Palacio, Santiago del and others},
+  journal={Monthly Notices of the Royal Astronomical Society},
+  volume={509},
+  number={4},
+  pages={5790--5808},
+  year={2022},
+  publisher={Oxford University Press}
+}
+```
+
+
 ### Repository structure
 
 Here we detail the folder structure of the repository, for convenience. We include a <code>requirements.txt</code> file for packages used.
