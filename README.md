@@ -1,6 +1,6 @@
 <h1 align='center'>Single Pulse Analyses of the Vela Pulsar <br> using Machine Learning Techniques<br><br>
    Vela-Pulsar (<a href='https://academic.oup.com/mnras/article-abstract/509/4/5790/6433657'>MNRAS</a>, <a href='https://arxiv.org/abs/2108.13462'>arXiv</a>)<br>
-   Vela-Glitch (<a href=''>MNRAS</a>, <a href=''>arXiv</a>)</h2>
+   Vela-Glitch (<a href=''>MNRAS</a>, <a href='https://arxiv.org/abs/2210.03770'>arXiv</a>)</h2>
    
    
    
