@@ -1,6 +1,6 @@
 <h1 align='center'>Single Pulse Analyses of the Vela Pulsar <br> using Machine Learning Techniques<br><br>
    Vela-Pulsar (<a href='https://academic.oup.com/mnras/article-abstract/509/4/5790/6433657'>MNRAS</a>, <a href='https://arxiv.org/abs/2108.13462'>arXiv</a>)<br>
-   Vela-Glitch (<a href=''>MNRAS</a>, <a href='https://arxiv.org/abs/2210.03770'>arXiv</a>)</h2>
+   Vela-Glitch (<a href='https://academic.oup.com/mnras/advance-article-abstract/doi/10.1093/mnras/stad723/7074572'>MNRAS</a>, <a href='https://arxiv.org/abs/2210.03770'>arXiv</a>)</h2>
    
    
    
@@ -25,6 +25,19 @@ If you found the information helpful for your work or use portions of this repo 
   pages={5790--5808},
   year={2022},
   publisher={Oxford University Press}
+}
+``` 
+or 
+```
+@article{10.1093/mnras/stad723,
+    author = {Zubieta, Ezequiel and Missel, Ryan and Fiscella, Valentina Sosa and Lousto, Carlos O and del Palacio, Santiago and Armengol, Federico G López and García, Federico and Combi, Jorge A and Wang, Linwei and Combi, Luciano and Gancio, Guillermo and Negrelli, Carolina and Gutiérrez, Eduardo M},
+    title = "{First results of the glitching pulsars monitoring program at the Argentine Institute of Radioastronomy}",
+    journal = {Monthly Notices of the Royal Astronomical Society},
+    year = {2023},
+    month = {03},
+    issn = {0035-8711},
+    doi = {10.1093/mnras/stad723},
+    url = {https://doi.org/10.1093/mnras/stad723}
 }
 ```
 
