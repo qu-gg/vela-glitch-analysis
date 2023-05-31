@@ -13,7 +13,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 
 from vae_model import VAE
-
+from util.util_functions import get_window
 
 """ 
 Arg parsing and Data setup

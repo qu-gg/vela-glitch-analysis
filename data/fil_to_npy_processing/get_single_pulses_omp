@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# Script for getting single pulses of filterbank observation
+# filfile, bestprof and polycos must be in the directory
+
+bestprof=$(ls *bestprof)
+polycos=$(ls *polycos)
+filfile=$(ls ds*fil)
+
+echo "fil file"
+echo $filfile
+
+if [ $(ls *polycos | wc -l) != 1 ]
+ then
+ echo "More than 1 polycos file exist ";
+ exit
+fi
+
+# Get initial period
+period_ms=$(cat $bestprof | grep P_topo | awk '{print $5}')
+period_s=$(bc -l <<< "$period_ms/1000");
+echo "period_ms"
+echo $period_ms
+
+# Get DM
+dm=$(cat $bestprof | grep DM | awk '{print $5}')
+echo "DM"
+echo $dm
+
+# Get length of observation
+length=$(readfile $filfile | grep 'Time per file' | awk '{print $6}')  # observation length in seconds
+echo "Length"
+echo $length
+
+# Get initial MJD
+MJD0=$(readfile $filfile | grep 'MJD start time' | awk '{print $5}')
+echo "MJD0"
+echo $MJD0
+
+# Get sampling time
+t_sampling=$(readfile $filfile | grep 'Sample time' | awk '{print $5}')
+echo "t_sampling"
+echo $t_sampling
+n_bins=$(bc -l <<<"scale=0; $period_ms/($t_sampling * 0.001)"); 
+echo "n_bins"
+echo $n_bins
+
+#-----------------------------------------------
+# 1 - Run RFIClean
+#-----------------------------------------------
+
+F0=$(head -n 2 $polycos | tail -n 1 | awk '{print $2}')
+echo "F0"
+echo $F0
+
+block_size=$(bc -l <<<"scale=0; 100 * $n_bins")
+echo "Block Size"
+echo $block_size
+#block_size=1222
+
+start=`date +%s.%N`
+#rficlean_omp -psrf $F0 -psrfbins 36 -t $block_size -white -o rficlean_${filfile} $filfile
+#echo "rficlean -psrf $F0 -psrfbins 36 -t $block_size -white -o rficlean_${filfile} $filfile"
+rficleaned_filfile=$(ls rficlean*fil)
+if test -f "$rficleaned_filfile"; then
+	echo "RFIclean fil already done"
+else
+	echo "Doing RFIclean"
+	rficlean -psrfbins 36 -t $block_size -white -o rficlean_${filfile} $filfile
+fi
+
+rficleaned_filfile=$(ls rficlean*fil)
+echo "RFICleaned file"
+echo $rficleaned_filfile
+echo "RFIClean completed!"
+
+after_rficlean=`date +%s.%N`
+runtime_rficlean=$( echo "$after_rficlean - $start" | bc -l )
+echo "Time running RFIClean (seconds):"
+echo $runtime_rficlean
+
+#----------------------------------------------
+# 2 - Create a mask
+#----------------------------------------------
+
+before_rfifind=`date +%s.%N`
+./create_mask
+maskfile=$(ls mask*.mask)
+after_rfifind=`date +%s.%N`
+runtime_rfifind=$( echo "$after_rfifind - $before_rfifind" | bc -l)
+echo "Time running rfifind (seconds):"
+echo $runtime_rfifind
+
+#----------------------------------------------
+# 3 - Run waterfaller to generate single pulses
+#----------------------------------------------
+
+before_extracting=`date +%s.%N`
+echo "running extract_single_pulses ..."
+echo "input:"
+echo $period_ms $dm $length $maskfile $rficleaned_file
+./extract_single_pulses $period_ms $dm $length $maskfile $rficleaned_filfile
+after_extracting=`date +%s.%N`
+runtime_extracting=$( echo "$after_extracting - $before_extracting" | bc -l)
+echo "Time extracting (seconds):"
+echo $runtime_extracting
+
+#----------------------------------------------
+# 4 - Interpolate
+#----------------------------------------------
+
+npulses=$(cat "extraction_output.txt" | grep npulses | awk '{print $2}')
+echo "Number of single pulses"
+echo $npulses
+
+nfiles=$(cat "extraction_output.txt" | grep nfiles | awk '{print $2}')
+echo "Number of files"
+echo $nfiles
+
+before_merging=`date +%s.%N`
+./merge_all_numba $nfiles $npulses $MJD0 $n_bins $polycos $bestprof
+after_merging=`date +%s.%N`
+runtime_merging=$( echo "$after_merging - $before_merging" | bc -l)
+echo "Time merging (seconds):"
+echo $runtime_merging
+
+

@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+import matplotlib
+import glob
+import numpy as np
+matplotlib.use('Agg')
+#from puma_iar import single_pulses_numba
+from single_pulses_numba import single_pulses_numba
+
+
+polycos  = glob.glob('*.polycos')[0]
+bestprof = glob.glob('*.bestprof')[0]
+
+import sys
+n_files = int( sys.argv[1] )
+n_pulses =  int( sys.argv[2] )
+MJD0 = np.asarray(sys.argv[3], dtype = np.longdouble)
+n_bins = int( sys.argv[4] )
+polycos = sys.argv[5]
+bestprof = sys.argv[6]
+
+print('In merger.py')
+print('n_files = ' + str(n_files))
+print('n_pulses = ' + str(n_pulses))
+print('MJD0 = ' + str(MJD0))
+print('n_bins = ' + str(n_bins))
+print('polycos = ' + str(polycos))
+print('bestprof = ' + str(bestprof))
+
+single_pulses_numba(n_files, n_pulses, polycos, bestprof, MJD0, n_bins)
+
